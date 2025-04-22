@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter Username</title>
+  <style>
+    body {
+      background: #000;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 12px #0ff;
+    }
+
+    input {
+      padding: 1rem;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      border: none;
+      width: 80%;
+      max-width: 400px;
+      background: #111;
+      color: white;
+      box-shadow: 0 0 10px #0ff;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      background: #00ffff;
+      color: black;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px #00ffff;
+    }
+
+    p {
+      color: #aaa;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enter Your Username</h1>
+  <input id="username" placeholder="Example: Anonymous" />
+  <button onclick="goToGroups()">Continue</button>
+  <p>(You can just type <strong>Anonymous</strong> if you want to stay hidden. It doesn’t have to be your real name!)</p>
+
+  <script>
+    function goToGroups() {
+      const name = document.getElementById("username").value.trim();
+      if (name === "") return alert("Please enter a username.");
+      localStorage.setItem("username", name);
+      window.location.href = "groups.html"; // 👈 next step page
+    }
+  </script>
+</body>
+</html>
+
