@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Groups</title>
+  <style>
+    body {
+      background: #000;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffff;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    #groupList, #invitations {
+      margin-top: 2rem;
+    }
+
+    .group {
+      background: #111;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #0ff;
+    }
+
+    input, button {
+      font-size: 1rem;
+      padding: 0.8rem;
+      margin: 0.3rem 0;
+      border-radius: 10px;
+      border: none;
+    }
+
+    input {
+      width: 70%;
+      background: #222;
+      color: white;
+      box-shadow: 0 0 6px #0ff;
+    }
+
+    button {
+      background: #00ffff;
+      color: black;
+      cursor: pointer;
+    }
+
+    .invite-btn {
+      margin-left: 0.5rem;
+    }
+
+    .invitation {
+      background: #222;
+      padding: 0.5rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+    }
+
+    .invitation button {
+      margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Groups</h1>
+
+  <div id="groupList">
+    <h2>Joined Groups</h2>
+    <div class="group">🌐 Open Group (Public)</div>
+  </div>
+
+  <div id="createGroup">
+    <h2>Create a Group</h2>
+    <input id="newGroupName" placeholder="Group name"/>
+    <input id="inviteUser" placeholder="Invite user by username"/>
+    <button onclick="createGroup()">Create & Invite</button>
+  </div>
+
+  <div id="invitations">
+    <h2>Pending Invitations</h2>
+    <!-- Invitations will be shown here -->
+  </div>
+
+  <script>
+    let username = localStorage.getItem("username");
+    if (!username) window.location.href = "login.html";
+
+    // Simulated server storage using localStorage for demo
+    const getInvites = () => JSON.parse(localStorage.getItem(`invites-${username}`) || "[]");
+    const setInvites = (invites) => localStorage.setItem(`invites-${username}`, JSON.stringify(invites));
+
+    const getGroups = () => JSON.parse(localStorage.getItem(`groups-${username}`) || "[]");
+    const setGroups = (groups) => localStorage.setItem(`groups-${username}`, JSON.stringify(groups));
+
+    function createGroup() {
+      const groupName = document.getElementById("newGroupName").value.trim();
+      const userToInvite = document.getElementById("inviteUser").value.trim();
+      if (!groupName || !userToInvite) return alert("Please fill both fields!");
+
+      let myGroups = getGroups();
+      myGroups.push(groupName);
+      setGroups(myGroups);
+
+      if (userToInvite !== username) {
+        let theirInvites = JSON.parse(localStorage.getItem(`invites-${userToInvite}`) || "[]");
+        theirInvites.push({ group: groupName, from: username });
+        localStorage.setItem(`invites-${userToInvite}`, JSON.stringify(theirInvites));
+      }
+
+      alert("Group created and invite sent!");
+      location.reload();
+    }
+
+    function renderGroups() {
+      let myGroups = getGroups();
+      const container = document.getElementById("groupList");
+      myGroups.forEach(group => {
+        let el = document.createElement("div");
+        el.className = "group";
+        el.innerText = "🔒 " + group;
+        container.appendChild(el);
+      });
+    }
+
+    function renderInvites() {
+      const invites = getInvites();
+      const container = document.getElementById("invitations");
+      invites.forEach((inv, idx) => {
+        let div = document.createElement("div");
+        div.className = "invitation";
+        div.innerHTML = `You were invited to <b>${inv.group}</b> by <i>${inv.from}</i>
+          <button onclick="acceptInvite(${idx})">Accept</button>
+          <button onclick="denyInvite(${idx})">Deny</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function acceptInvite(i) {
+      const invites = getInvites();
+      const invite = invites.splice(i, 1)[0];
+      let myGroups = getGroups();
+      myGroups.push(invite.group);
+      setGroups(myGroups);
+      setInvites(invites);
+      location.reload();
+    }
+
+    function denyInvite(i) {
+      const invites = getInvites();
+      invites.splice(i, 1);
+      setInvites(invites);
+      location.reload();
+    }
+
+    renderGroups();
+    renderInvites();
+  </script>
+</body>
+</html>
